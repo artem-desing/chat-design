@@ -29,11 +29,11 @@ tuner UI (and its preview-size sliders) are throwaway tooling; ignore them.
 
 ---
 
-## 2. Deviations from the original spec (`wally-liquid-gradient-spec.md`)
+## 2. Key design decisions
 
-The original spec is kept for full rationale, but these were changed during design review and are the **current source of truth**:
+Decided in design review — these are the source of truth:
 
-1. **White base.** The fill *under* the mesh is **`#fff`**, not the spec's warm-grey gradient (spec §4.1). The gradient is an ambient layer over the app's white surface; at the 5–12% production opacity a non-white base reads as a dirty grey wash.
+1. **White base.** The fill *under* the mesh is **`#fff`** (not a warm-grey base) — the gradient is an ambient layer over the app's white surface, and at the 5–12% production opacity a non-white base reads as a dirty grey wash.
 2. **Softer orange core.** Blob `b4` went from the hot `#ff5e16 → #ff7a30` to a pale peach **`#ffb07e → #ffc8a2`** — it was over-dominant against the pastel field.
 3. **Wider, more "liquid" travel.** The `@keyframes` translate ranges were widened from ~8–18% to **~22–34%** of each blob's box (durations unchanged), for more flow.
 4. **New defaults.** **Blur 90 · Speed 2×** (was 62 / 1×). Opacity 100%, Freeze off unchanged.
@@ -253,5 +253,5 @@ One CSS custom property flipped by a state class (don't swap assets / render two
 ---
 
 ## 7. Reference
-- **Original design/build spec** (full rationale + Figma annotations): [`wally-liquid-gradient-spec.md`](./wally-liquid-gradient-spec.md)
 - **Prototype source:** `src/components/chat-background/` (`liquid-gradient.tsx` + `liquid-gradient.css`). The prototype wraps the component in a 9:16 frame + a blur/speed/opacity/freeze tuner (with preview-size sliders) — none of that ships.
+- **Figma:** `Wally — AI Assistant`, file key `bsqgrzkpIB2yPVlNpgU8jN`, `ChatBg` node `67:1254`.

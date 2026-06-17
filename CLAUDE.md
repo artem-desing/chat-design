@@ -13,8 +13,8 @@ The chat background is the **Wally liquid mesh gradient** — six soft color blo
 drifting behind one large `filter: blur()`, on co-prime animation loops so the
 field never visibly repeats. Built to the `wally-liquid-gradient` spec: plain CSS,
 GPU-cheap (transform + opacity only), exact colors/sizes/positions/durations.
-Light/dark make no difference to the gradient — its colors are hardcoded by design
-(spec §4.6); only the surrounding chrome is themed.
+Light/dark make no difference to the gradient — its colors are hardcoded by design;
+only the surrounding chrome is themed.
 
 Owner: Artem Miskevich (Head of Design, `amiskevich@wallarm.com`).
 
@@ -85,7 +85,7 @@ in the component itself, so it lifts out cleanly into the real app later.
   px at the `--lg-blur-ref` (360) width. Width-anchored (`cqw`) → right for
   portrait; for aspect-independence swap to `cqmin` + `container-type: size`.
 - **No theme tokens for the gradient** — its colors are hardcoded and identical in
-  light and dark (spec §4.6). Only the chrome around it is themed.
+  light and dark by design. Only the chrome around it is themed.
 - **As-built defaults & deviations from the spec** (all in `docs/chat-background-handoff.md`):
   blur **90** / speed **2×**; white base (`#fff`, not the warm-grey gradient);
   softened orange core (`#ffb07e`); wider ~22–34% blob travel. Other blob
@@ -102,9 +102,8 @@ Routes (the prototype's Storybook substitute):
 ## Docs
 
 - `docs/chat-background-handoff.md` — developer handoff for lifting the gradient into the
-  real Wally app (as-built values, the white base, production opacity wiring 12%→5%).
-- `docs/wally-liquid-gradient-spec.md` — the original design/build spec (full rationale +
-  Figma source: file `bsqgrzkpIB2yPVlNpgU8jN`, `ChatBg` node `67:1254`).
+  real Wally app (as-built values, the white base, production opacity wiring 12%→5%; Figma
+  source: file `bsqgrzkpIB2yPVlNpgU8jN`, `ChatBg` node `67:1254`).
 - `README.md` — public-facing overview + run instructions.
 
 ## Deployment

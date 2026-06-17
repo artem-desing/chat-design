@@ -23,7 +23,6 @@ pnpm build    # static export to out/
 (pnpm only — see `CLAUDE.md`.)
 
 ## Handoff to engineering
-- **[docs/chat-background-handoff.md](docs/chat-background-handoff.md)** — developer handoff for lifting the gradient into the real Wally app (as-built values, the white base, production opacity wiring).
-- **[docs/wally-liquid-gradient-spec.md](docs/wally-liquid-gradient-spec.md)** — the original design/build spec (full rationale + Figma source).
+- **[docs/chat-background-handoff.md](docs/chat-background-handoff.md)** — developer handoff for lifting the gradient into the real Wally app (as-built values, the white base, production opacity wiring, Figma source).
 
 The gradient component lives in `src/components/chat-background/` (`liquid-gradient.tsx` + `liquid-gradient.css`) and is plain CSS with no framework deps, so it lifts out cleanly. Prototype only — mock data, no real auth/API.

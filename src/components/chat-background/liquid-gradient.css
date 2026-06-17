@@ -14,11 +14,20 @@
      mesh opacity a non-white base reads as a grey wash, so the base is white.) */
   background: #ffffff;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  /* Query container so the blur scales with the rendered width — keeps the
+     field's softness constant at any size/screen (1280 / 1440 / 1920 …). */
+  container-type: inline-size;
+  /* Width (px) at which the `blur` prop equals its literal px value; blur scales
+     linearly from here. */
+  --lg-blur-ref: 360;
 }
 
 .lg-mesh {
   position: absolute;
   inset: 0;
+  /* Size-relative blur: = --lg-blur px at --lg-blur-ref width, scaling
+     proportionally otherwise (90px @360 → 180px @720 — same softness). */
+  filter: blur(calc(var(--lg-blur, 90) * 100cqw / var(--lg-blur-ref, 360)));
 }
 
 .lg-blob {
@@ -27,40 +36,42 @@
   will-change: transform;
 }
 
+/* Wider travel (~22–34% of each blob's box) for a more "liquid" flow. Durations
+   stay long + co-prime, so it reads slow and calm — just more distant drift. */
 @keyframes f1 {
   0%   { transform: translate(0, 0) scale(1); }
-  30%  { transform: translate(12%, 14%) scale(1.12); }
-  60%  { transform: translate(-8%, 18%) scale(0.96); }
+  30%  { transform: translate(25%, 29%) scale(1.18); }
+  60%  { transform: translate(-18%, 34%) scale(0.92); }
   100% { transform: translate(0, 0) scale(1); }
 }
 @keyframes f2 {
-  0%   { transform: translate(0, 0) scale(1.06); }
-  30%  { transform: translate(-14%, 8%) scale(0.92); }
-  60%  { transform: translate(-6%, -12%) scale(1.1); }
-  100% { transform: translate(0, 0) scale(1.06); }
+  0%   { transform: translate(0, 0) scale(1.08); }
+  30%  { transform: translate(-29%, 18%) scale(0.88); }
+  60%  { transform: translate(-13%, -25%) scale(1.16); }
+  100% { transform: translate(0, 0) scale(1.08); }
 }
 @keyframes f3 {
   0%   { transform: translate(0, 0) scale(1); }
-  35%  { transform: translate(10%, -14%) scale(1.2); }
-  70%  { transform: translate(-12%, -4%) scale(0.94); }
+  35%  { transform: translate(22%, -29%) scale(1.26); }
+  70%  { transform: translate(-25%, -9%) scale(0.9); }
   100% { transform: translate(0, 0) scale(1); }
 }
 @keyframes f4 {
-  0%   { transform: translate(0, 0) scale(1.1); }
-  30%  { transform: translate(-12%, -10%) scale(0.9); }
-  60%  { transform: translate(8%, -6%) scale(1.14); }
-  100% { transform: translate(0, 0) scale(1.1); }
+  0%   { transform: translate(0, 0) scale(1.12); }
+  30%  { transform: translate(-25%, -22%) scale(0.86); }
+  60%  { transform: translate(17%, -13%) scale(1.2); }
+  100% { transform: translate(0, 0) scale(1.12); }
 }
 @keyframes f5 {
   0%   { transform: translate(0, 0) scale(1); }
-  35%  { transform: translate(-14%, -16%) scale(1.12); }
-  65%  { transform: translate(6%, -8%) scale(0.95); }
+  35%  { transform: translate(-29%, -32%) scale(1.18); }
+  65%  { transform: translate(13%, -17%) scale(0.92); }
   100% { transform: translate(0, 0) scale(1); }
 }
 @keyframes f6 {
   0%   { transform: translate(0, 0) scale(1); }
-  30%  { transform: translate(11%, 12%) scale(1.08); }
-  60%  { transform: translate(-10%, 6%) scale(0.95); }
+  30%  { transform: translate(23%, 25%) scale(1.12); }
+  60%  { transform: translate(-22%, 13%) scale(0.92); }
   100% { transform: translate(0, 0) scale(1); }
 }
 

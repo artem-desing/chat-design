@@ -67,9 +67,10 @@ in the component itself, so it lifts out cleanly into the real app later.
 - `liquid-gradient.tsx` — the `LiquidGradient` component. Six color blobs
   (`BLOBS`), all children of one `.lg-mesh` layer so a **single** `filter: blur()`
   merges them into a continuous liquid field (never blur blobs individually).
-  Prop-driven: `blur` / `speed` / `opacity` / `frozen`. GPU-cheap (transform +
-  opacity only); `aria-hidden`, no pointer interaction. A server component (no
-  hooks) so it drops into both the server `final` page and the client `tune` page.
+  Prop-driven: `blur` / `speed` / `opacity` / `frozen` / `style` (the `style`
+  passthrough lets the app override the 9:16 lock to fill its chat container).
+  GPU-cheap (transform + opacity only); `aria-hidden`, no pointer interaction. A
+  server component (no hooks), so it drops into both `final` and `tune`.
 - `liquid-gradient.css` — plain global CSS: the `.lg-*` rules + the six
   `@keyframes` (`f1`–`f6`, referenced by the component's inline `animationName`) +
   the `prefers-reduced-motion` pause. Colors/sizes/positions/durations are the
@@ -78,15 +79,25 @@ in the component itself, so it lifts out cleanly into the real app later.
   is intentionally cross-wired (b3→f4, b4→f3).
 - Speed preserves the co-prime relationship: each blob's `animationDuration` is
   `base / speed`, never one shared duration.
+- **Blur is size-relative:** `.lg-frame` is a query container (`container-type:
+  inline-size`) and the mesh blur is `blur(calc(var(--lg-blur) * 100cqw /
+  var(--lg-blur-ref)))`, so softness stays constant at any rendered size. `blur` =
+  px at the `--lg-blur-ref` (360) width. Width-anchored (`cqw`) → right for
+  portrait; for aspect-independence swap to `cqmin` + `container-type: size`.
 - **No theme tokens for the gradient** — its colors are hardcoded and identical in
   light and dark (spec §4.6). Only the chrome around it is themed.
+- **As-built defaults & deviations from the spec** (all in `docs/chat-background-handoff.md`):
+  blur **90** / speed **2×**; white base (`#fff`, not the warm-grey gradient);
+  softened orange core (`#ffb07e`); wider ~22–34% blob travel. Other blob
+  colors/sizes/positions/durations are per spec.
 
 Routes (the prototype's Storybook substitute):
 - `/` — picker "super page" (mirrors the sibling prototypes' "Pick a variant" hub).
 - `/chat-background/final` — clean ship-ready frame: the gradient at full strength
   in a 9:16 phone frame, no controls.
 - `/chat-background/tune` — the playground: a 9:16 preview + four live controls
-  (blur, speed, opacity, freeze). "← All prototypes" links back to the picker.
+  (blur, speed, opacity, freeze) plus preview width/height sliders (a size/aspect
+  test — not gradient settings). "← All prototypes" links back to the picker.
 
 ## Docs
 

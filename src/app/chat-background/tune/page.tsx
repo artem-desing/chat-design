@@ -39,11 +39,15 @@ function Slider({ label, value, min, max, step, readout, onChange }: SliderProps
 }
 
 export default function ChatBackgroundPlayground() {
-  // The four spec defaults: blur 62px, speed 1×, opacity 100%, not frozen.
-  const [blur, setBlur] = useState(62);
-  const [speed, setSpeed] = useState(1);
+  // Defaults locked in the prototype: blur 90px, speed 2×, opacity 100%, not frozen.
+  const [blur, setBlur] = useState(90);
+  const [speed, setSpeed] = useState(2);
   const [opacity, setOpacity] = useState(1);
   const [frozen, setFrozen] = useState(false);
+  // Preview-only: sweep the rendered frame width AND height independently to
+  // confirm the field scales — and to see what a changed aspect does.
+  const [previewWidth, setPreviewWidth] = useState(360);
+  const [previewHeight, setPreviewHeight] = useState(640);
 
   return (
     <main className="relative min-h-dvh w-full bg-[var(--color-bg-page-bg)] px-24 py-24">
@@ -68,8 +72,14 @@ export default function ChatBackgroundPlayground() {
 
         <div className="flex flex-wrap items-start gap-24">
           {/* Phone-proportioned preview (9:16). */}
-          <div className="w-full" style={{ maxWidth: 340, flex: '0 0 auto' }}>
-            <LiquidGradient blur={blur} speed={speed} opacity={opacity} frozen={frozen} />
+          <div style={{ width: previewWidth, maxWidth: '100%', flex: '0 0 auto' }}>
+            <LiquidGradient
+              blur={blur}
+              speed={speed}
+              opacity={opacity}
+              frozen={frozen}
+              style={{ aspectRatio: 'auto', height: previewHeight }}
+            />
           </div>
 
           {/* The tuner — four controls, the Storybook substitute for this prototype. */}
@@ -110,6 +120,32 @@ export default function ChatBackgroundPlayground() {
                 <span className="text-xs text-[var(--color-text-secondary)]">Freeze animation</span>
               </SwitchLabel>
             </Switch>
+
+            {/* Preview aid — NOT a gradient setting. Sweep the frame width to
+                confirm the blur + composition hold at any rendered size. */}
+            <div className="flex flex-col gap-12 border-t border-[var(--color-border-primary)] pt-16">
+              <Slider
+                label="Preview width"
+                value={previewWidth}
+                min={280}
+                max={760}
+                step={10}
+                readout={`${previewWidth}px`}
+                onChange={setPreviewWidth}
+              />
+              <Slider
+                label="Preview height"
+                value={previewHeight}
+                min={360}
+                max={900}
+                step={10}
+                readout={`${previewHeight}px`}
+                onChange={setPreviewHeight}
+              />
+              <p className="text-xs text-[var(--color-text-tertiary)]">
+                Preview only — change width and height independently to test any size/aspect. Not gradient settings.
+              </p>
+            </div>
           </aside>
         </div>
       </div>

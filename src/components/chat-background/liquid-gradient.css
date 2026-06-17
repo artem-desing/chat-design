@@ -1,0 +1,71 @@
+/* Wally liquid mesh gradient — plain CSS, no Tailwind (kept portable so the
+   component can be lifted into the real app). Colors/sizes/positions/durations
+   are the source of truth from the spec; the @keyframes names f1..f6 are global
+   so the component's inline `animationName` can reference them. */
+
+.lg-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border-radius: 16px;
+  overflow: hidden;
+  /* Base under the mesh: white. (Spec §4.1 used a warm gradient base for depth,
+     but the gradient is an ambient layer over the app's white surface — at low
+     mesh opacity a non-white base reads as a grey wash, so the base is white.) */
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.lg-mesh {
+  position: absolute;
+  inset: 0;
+}
+
+.lg-blob {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+@keyframes f1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  30%  { transform: translate(12%, 14%) scale(1.12); }
+  60%  { transform: translate(-8%, 18%) scale(0.96); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes f2 {
+  0%   { transform: translate(0, 0) scale(1.06); }
+  30%  { transform: translate(-14%, 8%) scale(0.92); }
+  60%  { transform: translate(-6%, -12%) scale(1.1); }
+  100% { transform: translate(0, 0) scale(1.06); }
+}
+@keyframes f3 {
+  0%   { transform: translate(0, 0) scale(1); }
+  35%  { transform: translate(10%, -14%) scale(1.2); }
+  70%  { transform: translate(-12%, -4%) scale(0.94); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes f4 {
+  0%   { transform: translate(0, 0) scale(1.1); }
+  30%  { transform: translate(-12%, -10%) scale(0.9); }
+  60%  { transform: translate(8%, -6%) scale(1.14); }
+  100% { transform: translate(0, 0) scale(1.1); }
+}
+@keyframes f5 {
+  0%   { transform: translate(0, 0) scale(1); }
+  35%  { transform: translate(-14%, -16%) scale(1.12); }
+  65%  { transform: translate(6%, -8%) scale(0.95); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes f6 {
+  0%   { transform: translate(0, 0) scale(1); }
+  30%  { transform: translate(11%, 12%) scale(1.08); }
+  60%  { transform: translate(-10%, 6%) scale(0.95); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-blob {
+    animation: none !important;
+  }
+}

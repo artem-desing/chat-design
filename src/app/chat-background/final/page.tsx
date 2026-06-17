@@ -1,21 +1,17 @@
 import Link from 'next/link';
 import { Button } from '@wallarm-org/design-system/Button';
-import { ChatBackground } from '@/components/chat-background';
+import { LiquidGradient } from '@/components/chat-background';
 
 /**
- * The final view: exactly what ships behind the real chat — the animated ambient
- * field with the shipped defaults, an empty panel standing in for the chat UI,
- * and no tuning controls. Follows the system theme automatically via the
- * theme-aware --chat-bg-* tokens.
+ * The final view: the Wally liquid mesh gradient at full strength in a 9:16
+ * phone-proportioned frame — exactly the drift that ships behind the chat,
+ * with the spec defaults (blur 62, speed 1, opacity 1) and no controls.
  */
 export default function ChatBackgroundFinal() {
   return (
-    <main className="relative h-dvh w-full overflow-hidden bg-[var(--chat-bg-base)]">
-      <ChatBackground />
-
-      {/* Empty chat panel — stands in for the real chat surface. */}
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-24">
-        <div className="pointer-events-auto h-[80vh] w-full max-w-3xl rounded-2xl border border-[var(--color-border-primary)] bg-[var(--color-bg-surface-1)] shadow-xl" />
+    <main className="relative flex min-h-dvh w-full items-center justify-center bg-[var(--color-bg-page-bg)] p-24">
+      <div className="w-full" style={{ maxWidth: 360 }}>
+        <LiquidGradient />
       </div>
 
       {/* Back to the prototypes hub. */}

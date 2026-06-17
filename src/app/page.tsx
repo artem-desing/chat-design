@@ -19,7 +19,7 @@ const SECTIONS: Section[] = [
   {
     label: 'Chat background',
     blurb:
-      'An animated canvas that sits behind the chat surface — a gentle, ambient field. The motion is a tasteful placeholder until the design requirements land.',
+      'The Wally AI assistant’s ambient backdrop — a liquid mesh gradient: six soft color blobs drifting behind one big blur, on co-prime loops so it never visibly repeats.',
     cards: [
       {
         href: '/chat-background/final',
@@ -28,14 +28,14 @@ const SECTIONS: Section[] = [
         badge: 'Final',
         badgeTone: 'success',
         description:
-          'Exactly what ships behind the chat — the ambient field with the chosen defaults and an empty chat panel standing in for the real UI. No controls; follows the system theme.',
+          'The mesh gradient at full strength in a 9:16 phone frame — exactly the drift that ships behind the chat, at the spec defaults. No controls.',
       },
       {
         href: '/chat-background/tune',
         title: 'Animation with adjustments',
         route: '/chat-background/tune',
         description:
-          'The same field with the full tuning panel — variant, density, speed, drift, glow and intensity — plus a light/dark preview switch.',
+          'The same gradient with the tuner — blur, speed, opacity and a freeze toggle for grabbing a still.',
       },
     ],
   },

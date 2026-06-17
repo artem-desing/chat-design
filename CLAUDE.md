@@ -9,12 +9,12 @@ Wallarm — the ambient field that sits behind the chat surface. Sibling to the
 `auth-design` and `global-navigation-prototype` prototypes — same stack and WADS
 chassis, different surface. Discussion artifact, not production.
 
-The animation is currently a **tasteful placeholder** (a gentle drifting-particle
-field and a soft "aurora" of slow color blobs). The real chat-background design
-requirements are pending from Artem — when they land, swap the engine's two draw
-routines and retune the `--chat-bg-*` tokens. The chassis (picker → final → tune,
-token-driven theming, DPR / reduced-motion / visibility handling) is built to
-outlast the placeholder.
+The chat background is the **Wally liquid mesh gradient** — six soft color blobs
+drifting behind one large `filter: blur()`, on co-prime animation loops so the
+field never visibly repeats. Built to the `wally-liquid-gradient` spec: plain CSS,
+GPU-cheap (transform + opacity only), exact colors/sizes/positions/durations.
+Light/dark make no difference to the gradient — its colors are hardcoded by design
+(spec §4.6); only the surrounding chrome is themed.
 
 Owner: Artem Miskevich (Head of Design, `amiskevich@wallarm.com`).
 
@@ -60,32 +60,41 @@ WADS (no `-rc`) unless Artem confirms.
 
 ### Chat background (`src/components/chat-background/` + `src/app/chat-background/`)
 
-Decorative animated ambient field for the chat screen — a canvas engine with two
-restrained, premium-feeling variants. Placeholder motion until the design lands.
+The **Wally liquid mesh gradient** — the ambient backdrop for the Wally AI
+assistant chat. Built to the `wally-liquid-gradient` spec: plain CSS, no Tailwind
+in the component itself, so it lifts out cleanly into the real app later.
 
-- `engine.ts` — framework-agnostic canvas engine. DPR-aware, single rAF loop,
-  runtime CSS-var color resolution, `prefers-reduced-motion` freeze, visibility
-  pause, robust clamped frame timing. Two variants share the loop: `particles`
-  (soft drifting dots, drawn from cached per-color sprites so the field stays
-  smooth) and `aurora` (a few large feathered radial-gradient blobs on slow
-  Lissajous paths). `DEFAULTS` per variant.
-- `chat-background.tsx` — React wrapper. Resolves prop defaults, mirrors live
-  tunables via a JSON signature, re-resolves colors on theme flip via a
-  `MutationObserver` on `<html>`. Renders only the field (`aria-hidden`, never in
-  tab order, no pointer events).
-- Colors come from **dedicated theme-aware tokens** in `globals.css`
-  (`--chat-bg-base` / `-dot` / `-accent`), each defined in terms of WADS palette
-  tokens so the field tracks light/dark automatically. `getComputedStyle()
-  .getPropertyValue()` resolves `var()` chains to a final hex, so the engine reads
-  them cleanly.
+- `liquid-gradient.tsx` — the `LiquidGradient` component. Six color blobs
+  (`BLOBS`), all children of one `.lg-mesh` layer so a **single** `filter: blur()`
+  merges them into a continuous liquid field (never blur blobs individually).
+  Prop-driven: `blur` / `speed` / `opacity` / `frozen`. GPU-cheap (transform +
+  opacity only); `aria-hidden`, no pointer interaction. A server component (no
+  hooks) so it drops into both the server `final` page and the client `tune` page.
+- `liquid-gradient.css` — plain global CSS: the `.lg-*` rules + the six
+  `@keyframes` (`f1`–`f6`, referenced by the component's inline `animationName`) +
+  the `prefers-reduced-motion` pause. Colors/sizes/positions/durations are the
+  spec's source of truth — **don't round the durations** (23/29/31/37/41/43 are
+  prime → the composite loop never visibly repeats), and the blob↔keyframe mapping
+  is intentionally cross-wired (b3→f4, b4→f3).
+- Speed preserves the co-prime relationship: each blob's `animationDuration` is
+  `base / speed`, never one shared duration.
+- **No theme tokens for the gradient** — its colors are hardcoded and identical in
+  light and dark (spec §4.6). Only the chrome around it is themed.
 
 Routes (the prototype's Storybook substitute):
 - `/` — picker "super page" (mirrors the sibling prototypes' "Pick a variant" hub).
-- `/chat-background/final` — clean ship-ready frame: animation + empty chat panel,
-  no controls, follows system theme via the shipped component defaults.
-- `/chat-background/tune` — full tuning panel (variant, intensity, speed, density,
-  size, glow/feather, drift) plus a light/dark preview switch. "← All prototypes"
-  links back to the picker.
+- `/chat-background/final` — clean ship-ready frame: the gradient at full strength
+  in a 9:16 phone frame, no controls.
+- `/chat-background/tune` — the playground: a 9:16 preview + four live controls
+  (blur, speed, opacity, freeze). "← All prototypes" links back to the picker.
+
+## Docs
+
+- `docs/chat-background-handoff.md` — developer handoff for lifting the gradient into the
+  real Wally app (as-built values, the white base, production opacity wiring 12%→5%).
+- `docs/wally-liquid-gradient-spec.md` — the original design/build spec (full rationale +
+  Figma source: file `bsqgrzkpIB2yPVlNpgU8jN`, `ChatBg` node `67:1254`).
+- `README.md` — public-facing overview + run instructions.
 
 ## Deployment
 

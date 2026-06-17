@@ -6,24 +6,6 @@
 
 @source "../../node_modules/@wallarm-org/design-system/dist";
 
-/* Dedicated tokens for the animated chat background (ChatBackground engine).
-   Defined in terms of WADS palette tokens so the field tracks the system theme
-   automatically: WADS flips `[data-theme="dark"]`, and these resolve through to
-   the right hex at runtime via getComputedStyle. These are a PLACEHOLDER palette
-   until the chat-background design requirements land — when they do, retune the
-   palette tokens here, not the engine. */
-:root {
-  --chat-bg-base: var(--color-slate-50);
-  --chat-bg-dot: var(--color-slate-400);
-  --chat-bg-accent: var(--color-w-orange-500);
-}
-
-[data-theme='dark'] {
-  --chat-bg-base: var(--color-slate-950);
-  --chat-bg-dot: var(--color-slate-600);
-  --chat-bg-accent: var(--color-w-orange-400);
-}
-
 /* Default focus-visible ring for interactive shell elements. WADS exposes
    --color-focus-brand for this; without an opinionated default, browsers fall
    back to thin platform-default outlines that look out of place against the

@@ -11,6 +11,7 @@
   "dependencies": {
     "@internationalized/date": "^3.12.1",
     "@wallarm-org/design-system": "^0.29.2",
+    "lucide-react": "^1.21.0",
     "next": "16.2.4",
     "non.geist": "^2.0.1",
     "react": "19.2.4",

@@ -39,6 +39,22 @@ const SECTIONS: Section[] = [
       },
     ],
   },
+  {
+    label: 'Chain of thought',
+    blurb:
+      'How Wally’s reasoning surfaces in the chat — the animation and transitions of the chain-of-thought stream as it thinks. Motion studies and examples live here.',
+    cards: [
+      {
+        href: '/chain-of-thought',
+        title: 'Explore examples',
+        route: '/chain-of-thought',
+        badge: 'WIP',
+        badgeTone: 'info',
+        description:
+          'A playground for chain-of-thought animation and transitions. Scaffolded and empty for now — the prototype lands here next.',
+      },
+    ],
+  },
 ];
 
 export default function Home() {
@@ -52,8 +68,9 @@ export default function Home() {
           Prototypes
         </h1>
         <p className="max-w-2xl text-[var(--color-text-secondary)]">
-          Chat-background animation prototypes in one place. Each card opens a live,
-          auto-playing demo; use “← All prototypes” inside any view to come back here.
+          Chat surface prototypes in one place — the background animation and Wally’s
+          chain of thought. Each card opens a live demo; use “← All prototypes” inside
+          any view to come back here.
         </p>
       </header>
 

@@ -1,0 +1,282 @@
+/*
+ * Chain of Thought — tokens (spec §8) + animations (spec §6) + the connector
+ * composition from the Figma layout frame (node 409:3812).
+ *
+ * Plain global CSS (no Tailwind in the component) so it lifts out cleanly into
+ * the real Wally app, exactly like the liquid-gradient prototype. Everything is
+ * monochrome — the whole trace is var(--cot-fg) (secondary gray); "live" is
+ * motion (the shimmering label), never color. The ONLY hue is danger, on errors.
+ *
+ * The --cot-* vars map 1:1 onto WADS theme tokens, so light/dark both adapt:
+ *   --cot-fg     = color-icon/secondary  (slate-500 light · slate-50@80% dark)  == spec #62748e
+ *   --cot-rail   = color-border/primary  (slate-300 light · slate-600 dark)     == spec #cad5e2
+ *   --cot-danger = color-icon/danger     (the only color in the trace)
+ */
+.cot {
+  --cot-fg: var(--color-icon-secondary);
+  --cot-fg-muted: var(--color-text-tertiary);
+  --cot-rail: var(--color-border-primary);
+  --cot-danger: var(--color-icon-danger);
+  --cot-mono: var(--font-mono);
+
+  font-size: 12px; /* WADS text/xs — 12/16, per the Figma chain-item type */
+  line-height: 16px;
+  color: var(--cot-fg);
+}
+
+.cot-list,
+.cot-block,
+.cot-node {
+  display: flex;
+  flex-direction: column;
+}
+
+/* One 16px-tall row: slot (16px) + 6px gap + label + optional right metric. */
+.cot-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 16px;
+  padding: 5px 0;
+  margin: 0;
+  font: inherit;
+  text-align: left;
+  color: var(--cot-fg);
+  background: none;
+  border: 0;
+  animation: cot-in 160ms ease-out; /* stream-in (§6.2) */
+}
+button.cot-row {
+  cursor: default;
+  appearance: none;
+}
+.cot-row.is-collapsible {
+  cursor: pointer;
+}
+
+/* The single dynamic glyph slot (§6.4): type icon at rest → chevron on
+   hover → rotated chevron while expanded. type + chev stack in the same box. */
+.cot-slot {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+.cot-slot > * {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.cot-slot .type {
+  color: var(--cot-fg);
+}
+.cot-slot .chev {
+  display: none;
+  color: var(--cot-fg);
+  transition: transform 150ms ease;
+}
+.cot-row.is-collapsible:hover .cot-slot .type {
+  display: none;
+}
+.cot-row.is-collapsible:hover .cot-slot .chev {
+  display: inline;
+}
+.cot-row.is-collapsible[aria-expanded='true'] .cot-slot .type {
+  display: none;
+}
+.cot-row.is-collapsible[aria-expanded='true'] .cot-slot .chev {
+  display: inline;
+  transform: rotate(90deg);
+}
+
+.cot-label {
+  color: var(--cot-fg);
+  transition: opacity 120ms ease; /* active → done cross-fade (§6.3) */
+}
+.cot-summary-label {
+  font-weight: 500;
+}
+.cot-metric {
+  margin-left: auto;
+  padding-left: 8px;
+  font-family: var(--cot-mono);
+  font-size: 12px;
+  color: var(--cot-fg-muted);
+}
+
+/* States (§5): pending/skipped dim the type icon + label; error → danger. */
+.cot-row[data-status='pending'] .cot-label,
+.cot-row[data-status='pending'] .cot-slot .type {
+  opacity: 0.4;
+}
+.cot-row[data-status='skipped'] .cot-label,
+.cot-row[data-status='skipped'] .cot-slot .type {
+  opacity: 0.3;
+}
+.cot-row[data-status='error'] .cot-label {
+  color: var(--cot-danger);
+}
+.cot-row[data-status='error'] .cot-slot .type {
+  color: var(--cot-danger);
+}
+
+/* Connector rail — the "chain". Threads the icon gutter between live (top-level)
+   steps, like the chain-spacer separators in the Figma layout. Drawn from just
+   below one icon to the top of the next, so it never crosses a glyph. For an
+   expanded step the segment spans the whole node, running alongside its body. */
+.cot-list > .cot-node:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 21px;
+  bottom: -5px;
+  width: 1px;
+  background: var(--cot-rail);
+}
+.cot-list > .cot-node {
+  position: relative;
+}
+
+/* Expanded content sits indented under a continuing rail (spec §8). This is the
+   descending thread from a parent step / the folded summary down its children. */
+.cot-rail {
+  margin-left: 7px;
+  padding-left: 15px;
+  border-left: 1px solid var(--cot-rail);
+}
+
+/* Expand / collapse, animated via grid-template-rows so we never measure
+   heights (~220ms, §6.5). The inner element hides its overflow at 0fr; `inert`
+   (set in glyph.tsx while closed) keeps clipped content out of the tab order. */
+.cot-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 220ms ease,
+    opacity 220ms ease;
+}
+.cot-collapse.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.cot-collapse > .cot-collapse-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Expanded detail — a reasoning paragraph or a custom node. */
+.cot-detail {
+  margin: 0;
+  padding: 2px 0 6px;
+  color: var(--cot-fg);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+/* Findings — a bulleted list, each item a sentence of inline-code chips:
+   • `{code}` on `{on}` : {note}   (matches the Figma drawer composition). */
+.cot-findings {
+  margin: 0;
+  padding: 2px 0 6px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cot-finding {
+  position: relative;
+  padding-left: 14px;
+  color: var(--cot-fg);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.cot-finding::before {
+  content: '•';
+  position: absolute;
+  left: 2px;
+  color: var(--cot-fg-muted);
+}
+
+/* InlineCodeSnippet text follows the trace's secondary tone (per Figma),
+   overriding the WADS default syntax color (slate-900). --cot-fg resolves to
+   the same value as text/secondary in both themes. The faint code-snippet-bg
+   fill (slate @ 6%) is designed to read on a white surface — so the stage is
+   white, not slate-50. */
+.cot-finding code {
+  color: var(--cot-fg);
+}
+
+/* Reduced motion (§6.6): no shimmer, no entry/fold transitions. Active is then
+   carried by the label text (tense) alone. */
+@media (prefers-reduced-motion: reduce) {
+  .cot-shim {
+    animation: none;
+    background: none;
+    -webkit-text-fill-color: var(--cot-fg);
+    color: var(--cot-fg);
+  }
+  .cot-row {
+    animation: none;
+  }
+  .cot-collapse,
+  .cot-slot .chev,
+  .cot-label {
+    transition: none;
+  }
+}
+
+/* Active label — shimmer / shining text (§6.1). A faint band sweeps L→R. */
+.cot-shim {
+  background: linear-gradient(
+    90deg,
+    var(--cot-fg) 0%,
+    var(--cot-fg) 38%,
+    color-mix(in srgb, var(--cot-fg) 12%, transparent) 50%,
+    var(--cot-fg) 62%,
+    var(--cot-fg) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: cot-shim 1.05s linear infinite;
+}
+@keyframes cot-shim {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes cot-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Auto-fold (steps collapsing into the summary). The summary row has no entry
+   animation by default — but during the one-shot folding phase it fades in as
+   the step list collapses up into it. Suppressing the default keeps the hand-off
+   to the final (static) summary row from flickering. */
+.cot-summary {
+  animation: none;
+}
+.cot-fold-summary {
+  animation: cot-in 220ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cot-fold-summary {
+    animation: none;
+  }
+}

@@ -16,6 +16,11 @@ GPU-cheap (transform + opacity only), exact colors/sizes/positions/durations.
 Light/dark make no difference to the gradient — its colors are hardcoded by design;
 only the surrounding chrome is themed.
 
+A second surface now lives alongside it: the **Chain of Thought** process trace — the
+monochrome stream of reasoning / tool / subagent steps shown while Wally works, which
+folds into one summary line when done. Built to the `wally-cot-requirements` spec; full
+as-built details in `docs/chain-of-thought-handoff.md`.
+
 Owner: Artem Miskevich (Head of Design, `amiskevich@wallarm.com`).
 
 ## Stack
@@ -24,6 +29,7 @@ Owner: Artem Miskevich (Head of Design, `amiskevich@wallarm.com`).
 - React 19 + TypeScript strict
 - Tailwind CSS v4 (tokens come from WADS — do not redefine)
 - `@wallarm-org/design-system@0.29.2` (WADS) plus peers: `tw-animate-css`, `non.geist`, `@internationalized/date`
+- `lucide-react` — component icons (the Chain of Thought trace); WADS under-barrels its own lucide set
 - `pnpm` only — never npm or yarn
 - Deploys as a static export to GitHub Pages (`output: export`, basePath `/chat-design`)
 
@@ -51,7 +57,8 @@ WADS (no `-rc`) unless Artem confirms.
 - **Surface tokens stack invisibly in light mode.** `surface-1/2/3/4` are all white in light theme.
   For hover-on-surface use `--color-bg-light-primary` (slate-50), not another surface token.
 - **Icon set has gaps.** WADS 0.29.2 ships ~189 icons but the barrel exports fewer; common ones
-  (User, Sun, Bug, Eye) may be missing/unbarreled. Inline a custom SVG when one's absent.
+  (User, Sun, Bug, Eye) may be missing/unbarreled. For component icons use `lucide-react` directly
+  (WADS' icons *are* lucide); inline a custom SVG only as a last resort.
 - **`Text` defaults to `whitespace-pre-wrap`** — pass `truncate` or `style={{whiteSpace:'nowrap'}}`
   when it sits inside a nowrap parent.
 - **`<button>` centers text** — add `text-left` to any button wrapping `<Text grow>`.
@@ -93,17 +100,50 @@ in the component itself, so it lifts out cleanly into the real app later.
 
 Routes (the prototype's Storybook substitute):
 - `/` — picker "super page" (mirrors the sibling prototypes' "Pick a variant" hub).
+  Now two sections: **Chat background** and **Chain of thought**.
 - `/chat-background/final` — clean ship-ready frame: the gradient at full strength
   in a 9:16 phone frame, no controls.
 - `/chat-background/tune` — the playground: a 9:16 preview + four live controls
   (blur, speed, opacity, freeze) plus preview width/height sliders (a size/aspect
   test — not gradient settings). "← All prototypes" links back to the picker.
 
+### Chain of thought (`src/components/chain-of-thought/` + `src/app/chain-of-thought/`)
+
+The **process trace** for the Wally assistant — the monochrome stream of reasoning,
+tool, and subagent steps shown while it works, which folds into a single summary line
+when done. A presentational, data-driven `<ChainOfThought>` (renders whatever `steps`
+it's given); a playground hook fakes the agent stream for the demo. Plain `.cot-*`
+global CSS + WADS-token-mapped `--cot-*` vars, so it lifts out cleanly like the gradient.
+
+- **Monochrome + motion:** the whole trace is secondary gray; "live" is the shimmering
+  active-step label, never color. The only hue is danger (errors). **No brand orange.**
+- **Icons:** `lucide-react` (see Stack). Inline code uses WADS `InlineCodeSnippet` (text
+  recolored to secondary), on a **white** surface so its faint slate-@6% fill reads.
+- **Fold rules:** single step → the row itself; one type → that type's verb ("Thought
+  for 6s", never "Worked"); mixed → "Worked for {duration}" (`Activity`). On completion
+  the steps **animate-collapse up into the summary** (a `live → folding → summary` phase
+  machine), rather than snapping.
+- **Composition:** a connector rail threads the icon gutter (the "chain"); collapsible
+  rows swap their type icon → chevron on hover/expand (one dynamic slot); nesting 2 deep
+  max. Glyph precedence, states, and animations are the spec's source of truth.
+- **As-built spec & deviations** (all in `docs/chain-of-thought-handoff.md`): the
+  `InlineCodeSnippet` + secondary-text + white-surface decisions, the connector rail and
+  fold-collapse animation (both beyond the original spec), and the `lucide-react` choice.
+
+Route:
+- `/chain-of-thought` — the playground: a scenario picker (Mixed steps / Thinking only /
+  Single step) + Replay, the user-query line, and the live trace. "← All prototypes" back
+  to the picker. The picker, Replay, and `useSimulatedRun`/`fixtures` are throwaway tooling.
+
 ## Docs
 
 - `docs/chat-background-handoff.md` — developer handoff for lifting the gradient into the
   real Wally app (as-built values, the white base, production opacity wiring 12%→5%; Figma
   source: file `bsqgrzkpIB2yPVlNpgU8jN`, `ChatBg` node `67:1254`).
+- `docs/chain-of-thought-handoff.md` — component spec & developer handoff for the Chain of
+  Thought trace (data model, type→lucide icon map, fold rules, animations incl. the collapse,
+  WADS-token mappings, the `InlineCodeSnippet` + white-surface decisions; Figma file
+  `bsqgrzkpIB2yPVlNpgU8jN`, nodes `409:3812` / `494:4292`).
 - `README.md` — public-facing overview + run instructions.
 
 ## Deployment
